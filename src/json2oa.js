@@ -1,5 +1,17 @@
 const fs = require('fs');
 
+function getOpenApiType(val) {
+  if (!val) return 'undefined';
+
+  if (Array.isArray(val)) return 'array';
+
+  const type = typeof val;
+
+  if (type === 'number' && Number.isInteger(val)) return 'integer';
+
+  return type;
+}
+
 function toOpenApiComponent(filePath, componentName) {
   const json = fs.readFileSync(filePath);
   const data = JSON.parse(json);
@@ -9,11 +21,19 @@ function toOpenApiComponent(filePath, componentName) {
   const schema = {
     [componentName]: {
       type: 'object',
-      required: schemaProperties
+      required: schemaProperties,
+      properties: {}
     }
   };
 
-  // console.log(schema);
+  schemaProperties.forEach((p) => {
+    schema[componentName].properties[p] = {
+      type: getOpenApiType(data[p]),
+      example: data[p]
+    };
+  });
+
+  // console.log(JSON.stringify(schema));
 
   return schema;
 }
