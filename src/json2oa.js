@@ -33,8 +33,6 @@ function toOpenApiComponent(filePath, componentName) {
     };
   });
 
-  // console.log(JSON.stringify(schema));
-
   return schema;
 }
 
